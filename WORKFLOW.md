@@ -6,34 +6,39 @@ This document defines the **repository workflow, environment setup, and collabor
 
 ## 📁 Repository Structure
 
+```text
 AI-Assisted-Predictive-Maintenance/
+│
 ├── data/
-│ ├── raw/ # Raw dataset (not tracked)
-│ ├── processed/ # Cleaned / feature data
-│ └── README.md
+│   ├── raw/                 # Raw IMS bearing dataset (not tracked in Git)
+│   ├── processed/           # Cleaned data and extracted features
+│   └── README.md            # Dataset description and usage rules
 │
 ├── notebooks/
-│ ├── 01_eda.ipynb
-│ ├── 02_preprocessing.ipynb
-│ ├── 03_model_training.ipynb
-│ └── 04_evaluation.ipynb
+│   ├── 01_eda.ipynb         # Exploratory Data Analysis
+│   ├── 02_preprocessing.ipynb  # Signal processing & feature extraction
+│   ├── 03_model_training.ipynb # ML model training
+│   └── 04_evaluation.ipynb  # Model evaluation and results
 │
 ├── src/
-│ ├── preprocessing.py
-│ ├── models.py
-│ ├── evaluation.py
-│ └── utils.py
+│   ├── preprocessing.py     # Data cleaning and signal processing functions
+│   ├── models.py            # Machine learning models
+│   ├── evaluation.py        # Metrics and evaluation logic
+│   ├── utils.py             # Shared helper functions
+│   └── __init__.py
 │
 ├── results/
-│ ├── figures/
-│ └── metrics.txt
+│   ├── figures/             # Plots and visualizations
+│   └── metrics.txt          # Model performance metrics
 │
-├── pyproject.toml
-├── poetry.lock
-├── requirements.txt
-├── README.md
-└── WORKFLOW.md
-
+├── pyproject.toml           # Poetry project configuration
+├── poetry.lock              # Locked dependency versions
+├── requirements.txt         # pip-compatible dependency list
+├── README.md                # Project overview
+├── WORKFLOW.md              # Workflow, setup, and contribution guide
+├── .gitignore               # Ignored files and folders
+└── LICENSE                  # Project license
+```
 
 ---
 
