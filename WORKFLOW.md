@@ -59,7 +59,7 @@ python --version
 
 ---
 
-### Alternative: pip + venv
+### Alternative: pip + venv (Not implemented yet)-> cannot use right now
 
 ```bash
 python -m venv venv
