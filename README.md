@@ -131,6 +131,16 @@ The best-performing model is selected based on overall reliability and robustnes
 - System design and documentation
 - Presentation and reporting
 
+---
+
+## 👤 Author & Contributors
+1. Kaung Hein San
+2. Swe Mar Min Htin
+3. La Min Maung
+
+**Field:** **Electrical Engineering (Mechatronics)**
+
+**Affiliation**: King Mongkut’s Institute of Technology Ladkrabang (KMITL), Thailand
 
 ---
 
