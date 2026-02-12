@@ -83,7 +83,15 @@ pip install -r requirements.txt
 
 	- htin-dev
 
+**Example**
+```text
+feature/eda-min   \
+feature/prep-hein --> dev --> main
+feature/model-htin/
+```
+
 ---
+
 
 ### Standard Flow 
 
