@@ -207,7 +207,6 @@ marimo/_lsp/
 __marimo__/
 
 # dataset
-data/raw/*
 data/interim/*
 data/processed/*
 !data/README.md
