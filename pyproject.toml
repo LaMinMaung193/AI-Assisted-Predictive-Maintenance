@@ -24,6 +24,7 @@ jupyterlab = "^4.5.3"
 ipykernel = "^7.2.0"
 matplotlib = "^3.10.8"
 seaborn = "^0.13.2"
+imbalanced-learn = "^0.14.1"
 
 
 [build-system]
