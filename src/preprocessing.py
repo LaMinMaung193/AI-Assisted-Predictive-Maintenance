@@ -4,6 +4,9 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
 from config import RANDOM_STATE, TEST_SIZE
 
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import FunctionTransformer
+from feature_engineering import create_engineered_features
 
 FAILURE_COLUMNS = ["TWF", "HDF", "PWF", "OSF", "RNF"]
 
@@ -91,3 +94,63 @@ def build_preprocessing_pipeline(X: pd.DataFrame):
     )
 
     return preprocessor
+
+  
+
+
+# --------------------------------------------------
+# Transfer feature engineering Pipeline
+# --------------------------------------------------
+
+def build_full_preprocessing_pipeline(X: pd.DataFrame):
+
+    categorical_cols = ["Type"]
+
+    numerical_cols = [
+        "Air temperature [K]",
+        "Process temperature [K]",
+        "Rotational speed [rpm]",
+        "Torque [Nm]",
+        "Tool wear [min]",
+        "Temp_diff",
+        "Power"
+    ]
+
+    column_transformer = ColumnTransformer(
+        transformers=[
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
+            ("num", "passthrough", numerical_cols),
+        ]
+    )
+
+    full_pipeline = Pipeline(steps=[
+        ("feature_engineering",
+         FunctionTransformer(create_engineered_features, validate=False)),
+        ("preprocessing", column_transformer)
+    ])
+
+    return full_pipeline
+
+'''
+
+def build_full_preprocessing_pipeline(X: pd.DataFrame):
+
+    categorical_cols = ["Type"]
+    numerical_cols = [col for col in X.columns if col not in categorical_cols]
+
+    column_transformer = ColumnTransformer(
+        transformers=[
+            ("cat", OneHotEncoder(handle_unknown="ignore"), categorical_cols),
+            ("num", "passthrough", numerical_cols),
+        ]
+    )
+
+    full_pipeline = Pipeline(steps=[
+        ("feature_engineering",
+         FunctionTransformer(create_engineered_features, validate=False)),
+        ("preprocessing", column_transformer)
+    ])
+
+    return full_pipeline
+
+'''
