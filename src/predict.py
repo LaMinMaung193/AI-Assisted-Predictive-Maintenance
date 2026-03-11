@@ -1,3 +1,4 @@
+
 import joblib
 import pandas as pd
 import os
@@ -20,20 +21,34 @@ def predict_machine_failure(input_data: pd.DataFrame):
     X_processed = preprocessor.transform(input_data)
 
     # Make prediction
-    prediction = model.predict(X_processed)
+    prediction = model.predict(X_processed)[0]
+    probability = model.predict_proba(X_processed)[0][1]
 
-    return prediction
+    return prediction, probability
 
 
-sample = pd.DataFrame({
-    "Type": ["L"],
-    "Air temperature [K]": [298],
-    "Process temperature [K]": [308],
-    "Rotational speed [rpm]": [1455],
-    "Torque [Nm]": [40],
-    "Tool wear [min]": [20]
-})
+if __name__ == "__main__":
 
-result = predict_machine_failure(sample)
+    sample = pd.DataFrame({
+        "Type": ["L"],
+        "Air temperature [K]": [299.2],
+        "Process temperature [K]": [308.5],
+        "Rotational speed [rpm]": [1378],
+        "Torque [Nm]": [50.4],
+        "Tool wear [min]": [220]
+    })
 
-print("Prediction:", result)
+    pred, prob = predict_machine_failure(sample)
+
+    if pred == 1:
+        print("\n\nMachine Failure Likely\n")
+    else:
+        print("\n\nMachine Operating Normally\n")
+
+    print("Prediction:", pred)
+    print("Failure Probability:", round(prob*100,2), "%\n\n")
+
+
+
+
+
