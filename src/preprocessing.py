@@ -6,7 +6,7 @@ from config import RANDOM_STATE, TEST_SIZE
 
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
-from feature_engineering import create_engineered_features
+from src.feature_engineering import create_engineered_features
 
 FAILURE_COLUMNS = ["TWF", "HDF", "PWF", "OSF", "RNF"]
 

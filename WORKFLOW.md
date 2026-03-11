@@ -113,6 +113,12 @@ git checkout -b yourname-dev
 
 ---
 
+### Streamlit Deployment
+```bash
+poetry run streamlit run app/streamlit_app.py
+```
+---
+
 ## 👥 Roles & Responsibilities
 
 **Maintainer**
