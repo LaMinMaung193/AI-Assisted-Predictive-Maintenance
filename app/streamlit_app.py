@@ -15,7 +15,50 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🔧 AI-Assisted Predictive Maintenance Dashboard")
+# ==========================================
+# INDUSTRIAL DARK THEME
+# ==========================================
+
+import plotly.io as pio
+pio.templates.default = "plotly_dark"
+
+st.markdown("""
+<style>
+
+.stApp {
+    background-color: #0E1117;
+    color: #FAFAFA;
+}
+
+[data-testid="stSidebar"] {
+    background-color: #161B22;
+}
+
+h1, h2, h3 {
+    color: #4DB6FF;
+}
+
+.stMetric {
+    background-color: #1E242E;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.stDataFrame {
+    background-color: #1E242E;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown(
+"""
+# Predictive Maintenance AI
+### Real-Time Machine Health Monitoring System
+"""
+)
+st.markdown("---")
+
 
 # Sidebar
 mode = st.sidebar.selectbox(
@@ -77,7 +120,7 @@ if df is None:
     st.warning("Please select or upload a dataset.")
     st.stop()
 
-st.caption(f"Dataset Loaded: {data_source}")
+st.info(f"Dataset Loaded: {data_source}")
     # =============================
     # DATA ANALYTICS DASHBOARD
     # =============================
@@ -150,17 +193,20 @@ elif mode == "Row Prediction":
             # FAILURE GAUGE
             gauge = go.Figure(go.Indicator(
                 mode="gauge+number",
-                value=prob*100,
+                value=prob * 100,
                 title={'text': "Failure Probability (%)"},
                 gauge={
-                    'axis': {'range': [0,100]},
-                    'bar': {'color': "red"},
+                    'axis': {'range': [0, 100]},
+                    'bgcolor': "#161B22",
+                    'borderwidth': 2,
+                    'bordercolor': "#2A2E39",
+                    'bar': {'color': "#FF4B4B"},
                     'steps': [
-                        {'range':[0,40],'color':"green"},
-                        {'range':[40,70],'color':"orange"},
-                        {'range':[70,100],'color':"red"}
-                    ]
-                }
+                                {'range': [0, 40], 'color': "#00C853"},
+                                {'range': [40, 70], 'color': "#FFB300"},
+                                {'range': [70, 100], 'color': "#FF1744"}
+                            ]
+                    }
             ))
 
             col1.plotly_chart(gauge, use_container_width=True)
@@ -185,51 +231,120 @@ elif mode == "Row Prediction":
             else:
                 st.success("✅ Machine Operating Normally")
 
-    # =============================
-    # BATCH PREDICTION
-    # =============================
+# =============================
+# BATCH PREDICTION
+# =============================
 
 elif mode == "Batch Prediction":
 
-        st.subheader("Batch Prediction")
+    st.subheader("Batch Prediction")
 
-        st.dataframe(df.head())
+    st.dataframe(df.head())
 
-        if st.button("Predict Entire Dataset"):
+    if st.button("Predict Entire Dataset"):
 
-            results = []
+        # Run predictions
+        predictions = []
+        probabilities = []
 
-            for i in range(len(df)):
+        for i in range(len(df)):
+            row = df.iloc[[i]]
+            pred, prob = predict_machine_failure(row)
 
-                row = df.iloc[[i]]
+            predictions.append(pred)
+            probabilities.append(prob)
 
-                pred, prob = predict_machine_failure(row)
+        # Create results dataframe
+        results_df = pd.DataFrame({
+            "Prediction": predictions,
+            "Failure Probability": probabilities
+        })
 
-                results.append({
-                    "Prediction": pred,
-                    "Failure Probability": prob
-                })
+        # Merge with original dataset
+        output_df = pd.concat([df.reset_index(drop=True), results_df], axis=1)
 
-            results_df = pd.DataFrame(results)
+        # =============================
+        # MACHINE STATUS CLASSIFICATION
+        # =============================
 
-            output_df = pd.concat([df, results_df], axis=1)
+        def classify_machine(prob):
+            if prob < 0.3:
+                return "Healthy"
+            elif prob < 0.7:
+                return "Warning"
+            else:
+                return "Critical"
 
-            st.dataframe(output_df)
+        output_df["Machine Status"] = output_df["Failure Probability"].apply(classify_machine)
 
-            # Failure probability chart
+        # Show predictions table
+        st.dataframe(output_df)
+
+        # =============================
+        # FLEET HEALTH SUMMARY
+        # =============================
+
+        total = len(output_df)
+        healthy = (output_df["Machine Status"] == "Healthy").sum()
+        warning = (output_df["Machine Status"] == "Warning").sum()
+        critical = (output_df["Machine Status"] == "Critical").sum()
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        col1.metric("Machines Monitored", total)
+        col2.metric("Healthy", healthy)
+        col3.metric("Warning", warning)
+        col4.metric("Critical", critical)
+
+        # =============================
+        # FAILURE PROBABILITY DISTRIBUTION
+        # =============================
+
+        fig = px.histogram(
+            output_df,
+            x="Failure Probability",
+            nbins=30,
+            title="Failure Probability Distribution"
+        )
+
+        # =============================
+        # VISUALIZATION
+        # =============================
+
+        col1, col2 = st.columns(2)
+
+        with col1:
             fig = px.histogram(
-                output_df,
-                x="Failure Probability",
-                title="Failure Probability Distribution"
+            output_df,
+            x="Failure Probability",
+            nbins=30,
+            title="Failure Probability Distribution"
             )
-
             st.plotly_chart(fig, use_container_width=True)
 
-            csv = output_df.to_csv(index=False)
-
-            st.download_button(
-                label="Download Predictions.csv",
-                data=csv,
-                file_name="Predictions.csv",
-                mime="text/csv"
+        with col2:
+            status_fig = px.pie(
+            output_df,
+            names="Machine Status",
+            title="Machine Fleet Health Distribution",
+            color="Machine Status",
+            color_discrete_map={
+                "Healthy": "green",
+                "Warning": "orange",
+                "Critical": "red"
+            }
             )
+            st.plotly_chart(status_fig, use_container_width=True)
+
+        # =============================
+        # DOWNLOAD RESULTS
+        # =============================
+
+        csv = output_df.to_csv(index=False)
+
+        st.download_button(
+            label="Download Predictions.csv",
+            data=csv,
+            file_name="Predictions.csv",
+            mime="text/csv"
+        )
